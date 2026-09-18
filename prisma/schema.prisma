@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// A booking/availability inquiry submitted from "Check Availability" or "Book Now".
+model BookingLead {
+  id           String   @id @default(cuid())
+  name         String
+  email        String
+  checkIn      DateTime?
+  checkOut     DateTime?
+  guests       Int?
+  roomInterest String?
+  message      String?
+  status       String   @default("new") // new | contacted | confirmed | archived
+  createdAt    DateTime @default(now())
+}
+
+// Every concierge Q&A pair, logged for future review/fine-tuning of the knowledge base.
+model ConciergeMessage {
+  id            String   @id @default(cuid())
+  question      String
+  answer        String
+  matchedTopics String? // comma-separated knowledge base topics that were retrieved
+  createdAt     DateTime @default(now())
+}
