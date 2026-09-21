@@ -210,6 +210,21 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
   );
 }
 
+function TypingDots() {
+  return (
+    <div className="flex items-center gap-1.5 px-1 py-2">
+      {[0, 1, 2].map((i) => (
+        <motion.span
+          key={i}
+          className="h-1.5 w-1.5 rounded-full bg-primary-foreground/50"
+          animate={{ opacity: [0.3, 1, 0.3] }}
+          transition={{ duration: 1.1, repeat: Infinity, delay: i * 0.18 }}
+        />
+      ))}
+    </div>
+  );
+}
+
 function Concierge({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [messages, setMessages] = useState([
     {
@@ -219,6 +234,7 @@ function Concierge({ open, onClose }: { open: boolean; onClose: () => void }) {
   ]);
   const [input, setInput] = useState(""),
     [loading, setLoading] = useState(false);
+
   async function send(message = input) {
     if (!message.trim() || loading) return;
     const history = messages;
@@ -248,74 +264,115 @@ function Concierge({ open, onClose }: { open: boolean; onClose: () => void }) {
       setLoading(false);
     }
   }
+
   return (
     <AnimatePresence>
       {open && (
-        <motion.aside
-          initial={{ x: "100%" }}
-          animate={{ x: 0 }}
-          exit={{ x: "100%" }}
-          transition={{ type: "spring", damping: 28 }}
-          className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col bg-primary px-6 py-7 text-primary-foreground shadow-2xl md:px-9"
-        >
-          <div className="flex items-center justify-between border-b border-primary-foreground/20 pb-5">
-            <div>
-              <p className="eyebrow text-accent">Aurelia / concierge</p>
-              <h2 className="display mt-2 text-3xl">Ask Aurelia</h2>
-            </div>
-            <button onClick={onClose} aria-label="Close concierge">
-              <CircleX size={25} />
-            </button>
-          </div>
-          <div className="flex flex-1 flex-col gap-4 overflow-y-auto py-6">
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`max-w-[88%] ${message.from === "you" ? "self-end bg-accent text-primary-foreground" : "bg-primary-foreground/10"} px-4 py-3 text-sm leading-6`}
-              >
-                {message.text}
-              </div>
-            ))}
-            {loading && (
-              <div className="text-sm text-primary-foreground/60">
-                Aurelia is thinking…
-              </div>
-            )}
-          </div>
-          <div className="flex flex-wrap gap-2 pb-5">
-            {[
-              "What is included in wellness?",
-              "Do you have October availability?",
-              "Tell me about dinner",
-            ].map((prompt) => (
-              <button
-                key={prompt}
-                onClick={() => send(prompt)}
-                className="border border-primary-foreground/25 px-3 py-2 text-left text-xs transition hover:border-accent hover:text-accent"
-              >
-                {prompt}
-              </button>
-            ))}
-          </div>
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              send();
-            }}
-            className="flex border-b border-primary-foreground/40 pb-2"
+        <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 z-40 bg-primary/40 backdrop-blur-[2px]"
+          />
+          <motion.aside
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", damping: 30, stiffness: 260 }}
+            className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col bg-primary text-primary-foreground shadow-2xl"
           >
-            <input
-              value={input}
-              onChange={(event) => setInput(event.target.value)}
-              placeholder="Ask about your stay"
-              aria-label="Ask about your stay"
-              className="min-w-0 flex-1 bg-transparent py-2 text-sm outline-none placeholder:text-primary-foreground/45"
-            />
-            <button aria-label="Send message" className="text-accent">
-              <Send size={18} />
-            </button>
-          </form>
-        </motion.aside>
+            <div className="flex items-center justify-between border-b border-primary-foreground/15 px-6 py-6 md:px-9">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-accent/40 bg-accent/10">
+                  <Sparkles size={17} className="text-accent" />
+                </div>
+                <div>
+                  <p className="eyebrow text-accent">Aurelia Concierge</p>
+                  <h2 className="display mt-0.5 text-2xl leading-none">
+                    Ask Aurelia
+                  </h2>
+                </div>
+              </div>
+              <button
+                onClick={onClose}
+                aria-label="Close concierge"
+                className="rounded-full p-1.5 text-primary-foreground/60 transition hover:bg-primary-foreground/10 hover:text-primary-foreground"
+              >
+                <CircleX size={22} />
+              </button>
+            </div>
+
+            <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-6 py-6 md:px-9">
+              {messages.map((message, index) => (
+                <div
+                  key={index}
+                  className={`flex ${message.from === "you" ? "justify-end" : "justify-start"}`}
+                >
+                  <div
+                    className={`max-w-[85%] rounded-2xl px-4 py-3 text-[0.925rem] leading-relaxed ${
+                      message.from === "you"
+                        ? "rounded-br-md bg-accent text-primary-foreground"
+                        : "rounded-bl-md bg-primary-foreground/8 text-primary-foreground/95"
+                    }`}
+                  >
+                    {message.text}
+                  </div>
+                </div>
+              ))}
+              {loading && (
+                <div className="flex justify-start">
+                  <div className="rounded-2xl rounded-bl-md bg-primary-foreground/8 px-4">
+                    <TypingDots />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="border-t border-primary-foreground/15 px-6 py-5 md:px-9">
+              <div className="mb-4 flex flex-wrap gap-2">
+                {[
+                  "What is included in wellness?",
+                  "Do you have October availability?",
+                  "Tell me about dinner",
+                ].map((prompt) => (
+                  <button
+                    key={prompt}
+                    onClick={() => send(prompt)}
+                    disabled={loading}
+                    className="rounded-full border border-primary-foreground/20 px-3.5 py-2 text-left text-xs text-primary-foreground/80 transition hover:border-accent hover:text-accent disabled:opacity-40"
+                  >
+                    {prompt}
+                  </button>
+                ))}
+              </div>
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  send();
+                }}
+                className="flex items-center gap-3 rounded-full border border-primary-foreground/25 bg-primary-foreground/5 px-4 py-2.5 transition focus-within:border-accent"
+              >
+                <input
+                  value={input}
+                  onChange={(event) => setInput(event.target.value)}
+                  placeholder="Ask about your stay"
+                  aria-label="Ask about your stay"
+                  className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-primary-foreground/40"
+                />
+                <button
+                  type="submit"
+                  aria-label="Send message"
+                  disabled={loading || !input.trim()}
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-primary-foreground transition disabled:opacity-30"
+                >
+                  <Send size={15} />
+                </button>
+              </form>
+            </div>
+          </motion.aside>
+        </>
       )}
     </AnimatePresence>
   );
