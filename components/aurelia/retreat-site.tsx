@@ -82,6 +82,13 @@ function MotionShell({ children }: { children: React.ReactNode }) {
   }, []);
   return <>{children}</>;
 }
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 5) return "Good evening";
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  return "Good evening";
+}
 
 function Nav({ onConcierge }: { onConcierge: () => void }) {
   const [scrolled, setScrolled] = useState(false);
@@ -207,7 +214,7 @@ function Concierge({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [messages, setMessages] = useState([
     {
       from: "aurelia",
-      text: "Good evening. How may I make your stay feel more like your own?",
+      text: `${getGreeting()}. How may I make your stay feel more like your own?`,
     },
   ]);
   const [input, setInput] = useState(""),
