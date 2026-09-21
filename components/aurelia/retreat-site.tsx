@@ -155,43 +155,47 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
             transition={{ duration: 0.25 }}
             className="flex flex-col gap-1 border-t border-current/15 bg-background px-5 py-6 text-foreground lg:hidden"
           >
-            <a
-              onClick={closeMobile}
-              className="py-3 text-sm uppercase tracking-[0.14em]"
-              href="#stay"
-            >
-              Stay
-            </a>
-            <a
-              onClick={closeMobile}
-              className="py-3 text-sm uppercase tracking-[0.14em]"
-              href="#experiences"
-            >
-              Experiences
-            </a>
-            <a
-              onClick={closeMobile}
-              className="py-3 text-sm uppercase tracking-[0.14em]"
-              href="#gallery"
-            >
-              Gallery
-            </a>
+            {[
+              { label: "Stay", href: "#stay" },
+              { label: "Experiences", href: "#experiences" },
+              { label: "Gallery", href: "#gallery" },
+              { label: "Book", href: "#book" },
+            ].map(({ label, href }) => (
+              <a
+                key={href}
+                href={href}
+                onClick={(event) => {
+                  event.preventDefault();
+                  closeMobile();
+                  setTimeout(() => {
+                    document
+                      .querySelector(href)
+                      ?.scrollIntoView({ behavior: "smooth" });
+                  }, 300);
+                }}
+                className="py-3 text-sm uppercase tracking-[0.14em]"
+              >
+                {label}
+              </a>
+            ))}
             <button
               onClick={() => {
                 closeMobile();
-                onConcierge();
+                setTimeout(onConcierge, 300);
               }}
               className="py-3 text-left text-sm uppercase tracking-[0.14em]"
             >
               Concierge
             </button>
-            <a
-              onClick={closeMobile}
+            <button
+              onClick={() => {
+                closeMobile();
+                setTimeout(onConcierge, 300);
+              }}
               className="mt-2 border border-current px-4 py-3 text-center text-sm uppercase tracking-[0.14em]"
-              href="#book"
             >
               Book now
-            </a>
+            </button>
           </motion.nav>
         )}
       </AnimatePresence>
